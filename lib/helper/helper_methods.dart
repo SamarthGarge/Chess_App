@@ -1,0 +1,84 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_chess/providers/game_provider.dart';
+import 'package:squares/squares.dart';
+
+Widget buildGameType({
+  required String lable,
+  String? gameTime,
+  IconData? icon,
+  required Function() onTap,
+}) {
+  return InkWell(
+    onTap: onTap,
+    child: Card(
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        icon != null
+            ? Icon(icon)
+            : gameTime! == '60+0'
+                ? const SizedBox.shrink()
+                : Text(gameTime),
+        const SizedBox(
+          height: 10,
+        ),
+        Text(
+          lable,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        )
+      ]),
+    ),
+  );
+}
+
+String getTimerToDisplay({
+  required GameProvider gameProvider,
+  required bool isUser,
+}) {
+  String timer = '';
+  // check if is user
+  if (isUser) {
+    if (gameProvider.player == Squares.white) {
+      timer = gameProvider.whitesTime.toString().substring(2, 7);
+    } else {
+      timer = gameProvider.blacksTime.toString().substring(2, 7);
+    }
+  } else {
+    // other - AI or person
+    if (gameProvider.player == Squares.white) {
+      timer = gameProvider.whitesTime.toString().substring(2, 7);
+    } else {
+      timer = gameProvider.blacksTime.toString().substring(2, 7);
+    }
+  }
+  return timer;
+}
+
+final List<String> gameTimes = [
+  'Bullet 1+0',
+  'Bullet 2+0',
+  'Bullet 3+0',
+  'Blitz 3+2',
+  'Blitz 5+0',
+  'Blitz 5+3',
+  'Rapid 10+0',
+  'Rapid 10+5',
+  'Rapid 15+10',
+  'Classical 30+0',
+  'Classical 30+20',
+  'Custom 60+0',
+];
+
+var textFormDecoration = InputDecoration(
+  labelText: 'enter your password',
+  hintText: 'enter your password',
+  border: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(8),
+  ),
+  enabledBorder: OutlineInputBorder(
+    borderSide: const BorderSide(color: Colors.lightBlue, width: 1),
+    borderRadius: BorderRadius.circular(8),
+  ),
+  focusedBorder: OutlineInputBorder(
+    borderSide: const BorderSide(color: Colors.orangeAccent, width: 1),
+    borderRadius: BorderRadius.circular(8),
+  ),
+);
