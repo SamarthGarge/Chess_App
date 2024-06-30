@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_chess/helper/helper_methods.dart';
 import 'package:flutter_chess/service/assets_manager.dart';
 import 'package:flutter_chess/widgets/main_auth_button.dart';
 import 'package:flutter_chess/widgets/widgets.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -12,6 +15,86 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  File? finalFileImage;
+  String fileImageUrl = '';
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  void selectImage({required bool fromCamera}) async {
+    finalFileImage = await pickImage(
+        context: context,
+        fromCamera: fromCamera,
+        onFail: (e) {
+          // show error message
+          showSnackBar(context: context, content: e.toString());
+        });
+
+    if (finalFileImage != null) {
+      cropImage(finalFileImage!.path);
+    } else {
+      popCropDialog();
+    }
+  }
+
+  void cropImage(String path) async {
+    CroppedFile? croppedFile = await ImageCropper()
+        .cropImage(sourcePath: path, maxHeight: 800, maxWidth: 800);
+
+    popCropDialog();
+
+    if (croppedFile != null) {
+      setState(() {
+        finalFileImage = File(croppedFile.path);
+      });
+    } else {
+      popCropDialog();
+    }
+  }
+
+  void popCropDialog() {
+    Navigator.pop(context);
+  }
+
+  void showImagePickerDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Select an option'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text("Camera"),
+                  onTap: () {
+                    // choose image from camera
+                    selectImage(fromCamera: true);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.image),
+                  title: const Text("Gallery"),
+                  onTap: () {
+                    // choose image from gallery
+                    selectImage(fromCamera: false);
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,37 +114,74 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(
                 height: 20,
               ),
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.blue,
-                    backgroundImage: AssetImage(AssetsManager.userIcon),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.lightBlue,
-                          border: Border.all(width: 2, color: Colors.white),
-                          borderRadius: BorderRadius.circular(35)),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.camera_alt,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            // pick image from camera or gallery
-                          },
+              finalFileImage != null
+                  ? Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.blue,
+                          backgroundImage:
+                              FileImage(File(finalFileImage!.path)),
                         ),
-                      ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.lightBlue,
+                                border:
+                                    Border.all(width: 2, color: Colors.white),
+                                borderRadius: BorderRadius.circular(35)),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  // pick image from camera or gallery
+                                  showImagePickerDialog();
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.blue,
+                          backgroundImage: AssetImage(AssetsManager.userIcon),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.lightBlue,
+                                border:
+                                    Border.all(width: 2, color: Colors.white),
+                                borderRadius: BorderRadius.circular(35)),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  // pick image from camera or gallery
+                                  showImagePickerDialog();
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
               const SizedBox(
                 height: 40,
               ),

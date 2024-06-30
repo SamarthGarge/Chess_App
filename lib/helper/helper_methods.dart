@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_chess/providers/game_provider.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:squares/squares.dart';
 
 Widget buildGameType({
@@ -43,7 +47,7 @@ String getTimerToDisplay({
     }
   } else {
     // other - AI or person
-    if (gameProvider.player == Squares.white) {
+    if (gameProvider.player == Squares.black) {
       timer = gameProvider.whitesTime.toString().substring(2, 7);
     } else {
       timer = gameProvider.blacksTime.toString().substring(2, 7);
@@ -82,3 +86,37 @@ var textFormDecoration = InputDecoration(
     borderRadius: BorderRadius.circular(8),
   ),
 );
+
+// pick an image
+Future<File?> pickImage({
+  required BuildContext context,
+  required bool fromCamera,
+  required Function(String) onFail,
+}) async {
+  File? fileImage;
+  if (fromCamera) {
+    try {
+      final takenPhoto =
+          await ImagePicker().pickImage(source: ImageSource.camera);
+
+      if (takenPhoto != null) {
+        fileImage = File(takenPhoto.path);
+      }
+    } catch (e) {
+      onFail(e.toString());
+    }
+  } else {
+    try {
+      final choosenImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+
+      if (choosenImage != null) {
+        fileImage = File(choosenImage.path);
+      }
+    } catch (e) {
+      onFail(e.toString());
+    }
+  }
+
+  return fileImage;
+}
