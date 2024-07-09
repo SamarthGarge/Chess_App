@@ -9,6 +9,7 @@ import 'package:flutter_chess/main_screens/game_screen.dart';
 import 'package:flutter_chess/main_screens/game_time_screen.dart';
 import 'package:flutter_chess/main_screens/home_screen.dart';
 import 'package:flutter_chess/main_screens/settings_screen.dart';
+import 'package:flutter_chess/providers/authentication_provider.dart';
 import 'package:flutter_chess/providers/game_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +20,9 @@ void main() async {
   );
   runApp(
     MultiProvider(
-        providers: [ChangeNotifierProvider(create: (_) => GameProvider())],
+        providers: [ChangeNotifierProvider(create: (_) => GameProvider()),
+        ChangeNotifierProvider(create: (_) => AuthenticationProvider())
+        ],
         child: const MyApp()),
   );
 }

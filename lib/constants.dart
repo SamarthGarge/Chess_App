@@ -11,6 +11,16 @@ class Constants {
   static const String userInformationScreen = '/userInformationScreen';
 
   static const custom = 'Custom';
+
+  static const uid = 'uid';
+  static const name = 'name';
+  static const image = 'image';
+  static const email = 'email';
+  static const createdAt = 'createdAt';
+
+  static const String userImages = 'userImages';
+
+  static const String users = 'users';
 }
 
 enum PlayerColor {
@@ -22,4 +32,11 @@ enum GameDifficulty {
   easy,
   medium,
   hard,
+}
+
+enum SignType {
+  emailAndPassword,
+  guest,
+  google,
+  facebook,
 }
