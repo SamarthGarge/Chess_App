@@ -126,7 +126,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             formKey.currentState!.reset();
             // sign out the user and navigate to the login screen
             // so that he may now sign In
-            showSnackBar(context: context, content: 'Sign Up successful');
+            showSnackBar(context: context, content: 'Sign Up successful, Please Login');
 
             await authProvider.signOutUser().whenComplete(() {
               Navigator.pop(context);
