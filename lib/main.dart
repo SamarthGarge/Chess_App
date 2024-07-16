@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chess/authentication/landing_screen.dart';
 import 'package:flutter_chess/authentication/login_screen.dart';
 import 'package:flutter_chess/authentication/sign_up_screen.dart';
 import 'package:flutter_chess/constants.dart';
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       //home: const HomeScreen(),
-      initialRoute: Constants.loginScreen,
+      initialRoute: Constants.landingScreen,
       routes: {
         Constants.homeScreen: (context) => const HomeScreen(),
         Constants.gameScreen: (context) => const GameScreen(),
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
         Constants.gameTimeScreen: (context) => const GameTimeScreen(),
         Constants.loginScreen: (context) => const LoginScreen(),
         Constants.signUpScreen: (context) => const SignUpScreen(),
+        Constants.landingScreen: (context) => const LandingScreen(),
       },
     );
   }

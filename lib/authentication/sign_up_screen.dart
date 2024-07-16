@@ -108,6 +108,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
 
       if (userCredential != null) {
+
+        // send email verification 
+
+        
         // user has been created - now we save the user to firestore
         print('User created: ${userCredential.user!.uid}');
 
