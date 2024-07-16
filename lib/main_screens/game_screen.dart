@@ -256,7 +256,7 @@ class _GameScreenState extends State<GameScreen> {
           //     Navigator.pop(context);
           //   },
           // ),
-          backgroundColor: const Color.fromARGB(255, 28, 166, 32),
+          backgroundColor: Colors.blue,
           title: const Text(
             'Flutter Chess',
             style: TextStyle(color: Colors.white),

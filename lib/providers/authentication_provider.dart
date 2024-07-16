@@ -9,6 +9,7 @@ import 'package:flutter_chess/constants.dart';
 import 'package:flutter_chess/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 class AuthenticationProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isSignedIn = false;
@@ -180,3 +181,4 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+

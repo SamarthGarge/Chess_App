@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chess/authentication/googleSignIn.dart';
 import 'package:flutter_chess/constants.dart';
 import 'package:flutter_chess/helper/helper_methods.dart';
 import 'package:flutter_chess/providers/authentication_provider.dart';
@@ -79,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthenticationProvider>();
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -191,27 +193,31 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      // SocialButton(
+                      //   label: 'Guest',
+                      //   assetImage: AssetsManager.userIcon,
+                      //   height: 55.0,
+                      //   width: 55.0,
+                      //   onTap: () {},
+                      // ),
                       SocialButton(
-                        label: 'Guest',
-                        assetImage: AssetsManager.userIcon,
-                        height: 55.0,
-                        width: 55.0,
-                        onTap: () {},
-                      ),
-                      SocialButton(
-                        label: 'Google',
-                        assetImage: AssetsManager.googleIcon,
-                        height: 55.0,
-                        width: 55.0,
-                        onTap: () {},
-                      ),
-                      SocialButton(
-                        label: 'Facebook',
-                        assetImage: AssetsManager.facebookIcon,
-                        height: 55.0,
-                        width: 55.0,
-                        onTap: () {},
-                      ),
+                          label: 'Google',
+                          assetImage: AssetsManager.googleIcon,
+                          height: 55.0,
+                          width: 55.0,
+                          onTap: () {
+                            signInWithGoogle().then((value) {
+                              Navigator.pushNamed(
+                                  context, Constants.homeScreen);
+                            });
+                          }),
+                      // SocialButton(
+                      //   label: 'Facebook',
+                      //   assetImage: AssetsManager.facebookIcon,
+                      //   height: 55.0,
+                      //   width: 55.0,
+                      //   onTap: () {},
+                      // ),
                     ],
                   ),
                   const SizedBox(
