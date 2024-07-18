@@ -14,6 +14,8 @@ import 'package:flutter_chess/providers/authentication_provider.dart';
 import 'package:flutter_chess/providers/game_provider.dart';
 import 'package:provider/provider.dart';
 
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -52,6 +54,7 @@ class MyApp extends StatelessWidget {
         Constants.loginScreen: (context) => const LoginScreen(),
         Constants.signUpScreen: (context) => const SignUpScreen(),
         Constants.landingScreen: (context) => const LandingScreen(),
+        
       },
     );
   }

@@ -10,6 +10,7 @@ class Constants {
   static const String signUpScreen = '/signUpScreen';
   static const String userInformationScreen = '/userInformationScreen';
 
+
   static const custom = 'Custom';
 
   static const uid = 'uid';
@@ -22,8 +23,8 @@ class Constants {
 
   static const String users = 'users';
 
-   static const String userModel = 'userModel';
-   static const String isSignedIn = 'isSignedIn';
+  static const String userModel = 'userModel';
+  static const String isSignedIn = 'isSignedIn';
 }
 
 enum PlayerColor {

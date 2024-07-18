@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chess/authentication/forgot_password_screen.dart';
 import 'package:flutter_chess/authentication/google_sign_in.dart';
 import 'package:flutter_chess/constants.dart';
 import 'package:flutter_chess/helper/helper_methods.dart';
@@ -21,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late String email;
   late String password;
   bool obscureText = true;
+ 
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -159,9 +161,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: TextButton(
+                    child: ElevatedButton(
                       onPressed: () {
                         // forgot password method here
+                      //  forgotPassword(context, emailController.text.trim()),
+                         Navigator.push(context,MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),);
                       },
                       child: const Text('Forgot Password ?'),
                     ),
