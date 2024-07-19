@@ -2,10 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_chess/constants.dart';
 import 'package:flutter_chess/helper/uci_commands.dart';
+import 'package:flutter_chess/models/user_model.dart';
 import 'package:squares/squares.dart';
 import 'package:bishop/bishop.dart' as bishop;
 import 'package:square_bishop/square_bishop.dart';
 import 'package:stockfish/stockfish.dart';
+
 
 class GameProvider extends ChangeNotifier {
   late bishop.Game _game = bishop.Game(variant: bishop.Variant.standard());
@@ -301,11 +303,10 @@ class GameProvider extends ChangeNotifier {
     required bool whiteWon,
     required Function onNewGame,
   }) {
-
-     // stop stockfish engine
-      if (stockfish != null) {
-        stockfish.stdin = UciCommands.stop;
-      }
+    // stop stockfish engine
+    if (stockfish != null) {
+      stockfish.stdin = UciCommands.stop;
+    }
 
     String resultToShow = '';
     int whiteScoresToShow = 0;
@@ -385,11 +386,10 @@ class GameProvider extends ChangeNotifier {
     );
   }
 
-  // String getResultToShow({required bool whiteWon}) {
-  //   if (whiteWon) {
-  //     return 'White won on time';
-  //   } else {
-  //     return 'Black won on time';
-  //   }
-  // }
+// create a game
+  void createNewGameInFireStore({
+    required UserModel userModel,
+    required Function onSuccess,
+    required Function(String) onFail,
+  }) {}
 }

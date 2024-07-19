@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_chess/providers/game_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:squares/squares.dart';

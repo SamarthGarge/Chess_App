@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chess/constants.dart';
+import 'package:flutter_chess/main_screens/change_password.dart';
+import 'package:flutter_chess/main_screens/contact_support.dart';
+import 'package:flutter_chess/main_screens/profile_screen.dart';
 import 'package:flutter_chess/providers/authentication_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +36,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
         ],
       ),
-      body: const Center(child: Text('Settings Screen')),
+      body: ListView(
+        children: <Widget>[
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Profile'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+            },
+          ),
+          
+          
+          ListTile(
+            leading: const Icon(Icons.lock),
+            title: const Text('Change Password'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordScreen()));
+            },
+          ),
+          
+          
+           ListTile(
+            leading: const Icon(Icons.contact_support),
+            title: const Text('Contact Support'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ContactSupportScreen()));
+            },
+          ),
+          
+          // ListTile(
+          //   leading: Icon(Icons.help),
+          //   title: Text('Help Center'),
+          //   onTap: () {
+          //     // Navigator.push(context, MaterialPageRoute(builder: (context) => HelpCenterScreen()));
+          //   },
+          // ),
+     ],
+    ),
     );
   }
 }
+

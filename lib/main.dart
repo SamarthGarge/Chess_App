@@ -6,9 +6,12 @@ import 'package:flutter_chess/authentication/sign_up_screen.dart';
 import 'package:flutter_chess/constants.dart';
 import 'package:flutter_chess/firebase_options.dart';
 import 'package:flutter_chess/main_screens/about_screen.dart';
+import 'package:flutter_chess/main_screens/change_password.dart';
+import 'package:flutter_chess/main_screens/contact_support.dart';
 import 'package:flutter_chess/main_screens/game_screen.dart';
 import 'package:flutter_chess/main_screens/game_time_screen.dart';
 import 'package:flutter_chess/main_screens/home_screen.dart';
+import 'package:flutter_chess/main_screens/profile_screen.dart';
 import 'package:flutter_chess/main_screens/settings_screen.dart';
 import 'package:flutter_chess/providers/authentication_provider.dart';
 import 'package:flutter_chess/providers/game_provider.dart';
@@ -54,6 +57,11 @@ class MyApp extends StatelessWidget {
         Constants.loginScreen: (context) => const LoginScreen(),
         Constants.signUpScreen: (context) => const SignUpScreen(),
         Constants.landingScreen: (context) => const LandingScreen(),
+        Constants.profileScreen: (context) => ProfileScreen(),
+        Constants.changePasswordScreen: (context) => ChangePasswordScreen(),
+        Constants.contactSupportScreen: (context) => const ContactSupportScreen(),
+        
+
         
       },
     );
