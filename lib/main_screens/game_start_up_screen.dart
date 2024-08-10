@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chess/constants.dart';
+import 'package:flutter_chess/providers/authentication_provider.dart';
 import 'package:flutter_chess/providers/game_provider.dart';
 import 'package:flutter_chess/widgets/widgets.dart';
 import 'package:provider/provider.dart';
@@ -201,13 +202,24 @@ class _GameStartUpScreenState extends State<GameStartUpScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    // navigate to game screen
-                    playGame(gameProvider: gameProvider);
-                  },
-                  child: const Text('Play'),
+
+                gameProvider.isLoading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: () {
+                          // navigate to game screen
+                          playGame(gameProvider: gameProvider);
+                        },
+                        child: const Text('Play'),
+                      ),
+
+                const SizedBox(
+                  height: 20,
                 ),
+
+                gameProvider.vsComputer
+                    ? const SizedBox.shrink()
+                    : Text(gameProvider.waitingText)
               ],
             ),
           );
@@ -219,6 +231,7 @@ class _GameStartUpScreenState extends State<GameStartUpScreen> {
   void playGame({
     required GameProvider gameProvider,
   }) async {
+    final userModel = context.read<AuthenticationProvider>().userModel;
     // check if is custom time
     if (widget.isCustomTime) {
       // check all timer greater than 0
@@ -275,9 +288,27 @@ class _GameStartUpScreenState extends State<GameStartUpScreen> {
           Navigator.pushNamed(context, Constants.gameScreen);
         } else {
           // search for players
-          
-
-
+          gameProvider.searchPlayer(
+              userModel: userModel!,
+              onSuccess: () {
+                if (gameProvider.waitingText == Constants.searchingPlayerText) {
+                  gameProvider.checkIfOpponentJoined(
+                    userModel: userModel,
+                    onSuccess: () {
+                      gameProvider.setIsLoading(value: false);
+                      Navigator.pushNamed(context, Constants.gameScreen);
+                    },
+                  );
+                } else {
+                  gameProvider.setIsLoading(value: false);
+                  // navigate to gamescreen
+                  Navigator.pushNamed(context, Constants.gameScreen);
+                }
+              },
+              onFail: (error) {
+                gameProvider.setIsLoading(value: false);
+                showSnackBar(context: context, content: error);
+              });
         }
       });
     }

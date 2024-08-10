@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_chess/constants.dart';
 import 'package:flutter_chess/helper/helper_methods.dart';
 import 'package:flutter_chess/helper/uci_commands.dart';
+import 'package:flutter_chess/models/user_model.dart';
+import 'package:flutter_chess/providers/authentication_provider.dart';
 import 'package:flutter_chess/providers/game_provider.dart';
 import 'package:flutter_chess/service/assets_manager.dart';
 import 'package:provider/provider.dart';
@@ -39,51 +42,59 @@ class _GameScreenState extends State<GameScreen> {
   void letOtherPlayerPlayFirst() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final gameProvider = context.read<GameProvider>();
-      if (gameProvider.state.state == PlayState.theirTurn &&
-          !gameProvider.aiThinking) {
-        gameProvider.setAiThinking(true);
 
-        // wait until stockfish is ready
-        await waitUntilReady();
+      if (gameProvider.vsComputer) {
+        if (gameProvider.state.state == PlayState.theirTurn &&
+            !gameProvider.aiThinking) {
+          gameProvider.setAiThinking(true);
 
-        // get the current position of the board and sent to stockfish
-        stockfish.stdin =
-            '${UciCommands.position} ${gameProvider.getPositionFen()}';
+          // wait until stockfish is ready
+          await waitUntilReady();
 
-        // set stockfish level
-        stockfish.stdin =
-            '${UciCommands.goMoveTime} ${gameProvider.gameLevel * 1000}';
+          // get the current position of the board and sent to stockfish
+          stockfish.stdin =
+              '${UciCommands.position} ${gameProvider.getPositionFen()}';
 
-        stockfish.stdout.listen((event) {
-          if (event.contains(UciCommands.bestMove)) {
-            final bestMove = event.split(' ')[1];
-            gameProvider.makeStringMove(bestMove);
-            gameProvider.setAiThinking(false);
+          // set stockfish level
+          stockfish.stdin =
+              '${UciCommands.goMoveTime} ${gameProvider.gameLevel * 1000}';
 
-            gameProvider.setSquaresState().whenComplete(() {
-              if (gameProvider.player == Squares.white) {
-                // check if we can play whitesTimer
-                if (gameProvider.playWhitesTimer) {
-                  // pause timer for black
-                  gameProvider.pauseBlacksTimer();
+          stockfish.stdout.listen((event) {
+            if (event.contains(UciCommands.bestMove)) {
+              final bestMove = event.split(' ')[1];
+              gameProvider.makeStringMove(bestMove);
+              gameProvider.setAiThinking(false);
 
-                  startTimer(isWhiteTimer: true, onNewGame: () {});
+              gameProvider.setSquaresState().whenComplete(() {
+                if (gameProvider.player == Squares.white) {
+                  // check if we can play whitesTimer
+                  if (gameProvider.playWhitesTimer) {
+                    // pause timer for black
+                    gameProvider.pauseBlacksTimer();
 
-                  gameProvider.setPlayWhitesTimer(value: false);
+                    startTimer(isWhiteTimer: true, onNewGame: () {});
+
+                    gameProvider.setPlayWhitesTimer(value: false);
+                  }
+                } else {
+                  if (gameProvider.playBlacksTimer) {
+                    // pause timer for white
+                    gameProvider.pauseWhitesTimer();
+
+                    startTimer(isWhiteTimer: false, onNewGame: () {});
+
+                    gameProvider.setPlayBlacksTimer(value: false);
+                  }
                 }
-              } else {
-                if (gameProvider.playBlacksTimer) {
-                  // pause timer for white
-                  gameProvider.pauseWhitesTimer();
-
-                  startTimer(isWhiteTimer: false, onNewGame: () {});
-
-                  gameProvider.setPlayBlacksTimer(value: false);
-                }
-              }
-            });
-          }
-        });
+              });
+            }
+          });
+        }
+      } else {
+        final userModel = context.read<AuthenticationProvider>().userModel;
+        // listen for game changes in firestore
+        gameProvider.listenForGameChanges(
+            context: context, userModel: userModel!);
       }
     });
   }
@@ -92,32 +103,53 @@ class _GameScreenState extends State<GameScreen> {
     final gameProvider = context.read<GameProvider>();
     bool result = gameProvider.makeSquaresMove(move);
     if (result) {
-      gameProvider.setSquaresState().whenComplete(() {
+      gameProvider.setSquaresState().whenComplete(() async {
         if (gameProvider.player == Squares.white) {
-          // pause timer for white
-          gameProvider.pauseWhitesTimer();
+          // check if we are playing vs computer
+          if (gameProvider.vsComputer) {
+            // pause timer for white
+            gameProvider.pauseWhitesTimer();
 
-          startTimer(
-            isWhiteTimer: false,
-            onNewGame: () {},
-          );
-          // set whites bool flag to true so that we don't run this code again until true
-          gameProvider.setPlayWhitesTimer(value: true);
+            startTimer(
+              isWhiteTimer: false,
+              onNewGame: () {},
+            );
+            // set whites bool flag to true so that we don't run this code again until true
+            gameProvider.setPlayWhitesTimer(value: true);
+          } else {
+            // play and save white's move to firestore
+           await gameProvider.playMoveAndSaveToFirestore(
+              context: context,
+              move: move,
+              isWhitesMove: true,
+            );
+          }
         } else {
-          // pause timer for black
-          gameProvider.pauseBlacksTimer();
+          if (gameProvider.vsComputer) {
+            // pause timer for black
+            gameProvider.pauseBlacksTimer();
 
-          startTimer(
-            isWhiteTimer: true,
-            onNewGame: () {},
-          );
-          // set blacks bool flag to true so that we don't run this code again until true
-          gameProvider.setPlayBlacksTimer(value: true);
+            startTimer(
+              isWhiteTimer: true,
+              onNewGame: () {},
+            );
+            // set blacks bool flag to true so that we don't run this code again until true
+            gameProvider.setPlayBlacksTimer(value: true);
+          } else {
+            // play and save black's move to firestore
+            await gameProvider.playMoveAndSaveToFirestore(
+              context: context,
+              move: move,
+              isWhitesMove: false,
+            );
+          }
         }
       });
     }
 
-    if (gameProvider.state.state == PlayState.theirTurn &&
+
+    if(gameProvider.vsComputer){
+      if (gameProvider.state.state == PlayState.theirTurn &&
         !gameProvider.aiThinking) {
       gameProvider.setAiThinking(true);
 
@@ -181,6 +213,8 @@ class _GameScreenState extends State<GameScreen> {
       //   }
       // });
     }
+    }
+    
 
     await Future.delayed(const Duration(seconds: 1));
     // listen if its game over
@@ -229,6 +263,7 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final gameProvider = context.read<GameProvider>();
+    final userModel = context.read<AuthenticationProvider>().userModel;
     return PopScope(
       canPop: false,
       onPopInvoked: (didpop) async {
@@ -289,47 +324,49 @@ class _GameScreenState extends State<GameScreen> {
               //mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Opponent's data
-                ListTile(
-                  leading: CircleAvatar(
-                    radius: 25,
-                    backgroundImage: AssetImage(AssetsManager.stockfishIcon),
-                  ),
-                  title: const Text('Stockfish'),
-                  subtitle: const Text('Rating: 3000'),
-                  trailing: Text(
-                    blacksTimer,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
+                showOpponentsData(
+                    gameProvider: gameProvider,
+                    userModel: userModel!,
+                    timeToShow: blacksTimer),
 
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: BoardController(
-                    state: gameProvider.flipBoard
-                        ? gameProvider.state.board.flipped()
-                        : gameProvider.state.board,
-                    playState: gameProvider.state.state,
-                    pieceSet: PieceSet.merida(),
-                    theme: BoardTheme.brown,
-                    moves: gameProvider.state.moves,
-                    onMove: _onMove,
-                    onPremove: _onMove,
-                    markerTheme: MarkerTheme(
-                      empty: MarkerTheme.dot,
-                      piece: MarkerTheme.corners(),
-                    ),
-                    promotionBehaviour: PromotionBehaviour.autoPremove,
-                  ),
-                ),
+                gameProvider.vsComputer
+                    ? Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: BoardController(
+                          state: gameProvider.flipBoard
+                              ? gameProvider.state.board.flipped()
+                              : gameProvider.state.board,
+                          playState: gameProvider.state.state,
+                          pieceSet: PieceSet.merida(),
+                          theme: BoardTheme.brown,
+                          moves: gameProvider.state.moves,
+                          onMove: _onMove,
+                          onPremove: _onMove,
+                          markerTheme: MarkerTheme(
+                            empty: MarkerTheme.dot,
+                            piece: MarkerTheme.corners(),
+                          ),
+                          promotionBehaviour: PromotionBehaviour.autoPremove,
+                        ),
+                      )
+                    : buildChessBoard(
+                        gameProvider: gameProvider,
+                        userModel: userModel,
+                      ),
 
                 // Our data
                 ListTile(
-                  leading: CircleAvatar(
-                    radius: 25,
-                    backgroundImage: AssetImage(AssetsManager.userIcon),
-                  ),
-                  title: const Text('User3015'),
-                  subtitle: const Text('Rating: 1200'),
+                  leading: userModel.image == ''
+                      ? CircleAvatar(
+                          radius: 25,
+                          backgroundImage: AssetImage(AssetsManager.userIcon),
+                        )
+                      : CircleAvatar(
+                          radius: 25,
+                          backgroundImage: NetworkImage(userModel.image),
+                        ),
+                  title: Text(userModel.name),
+                  subtitle: Text('Rating: ${userModel.playerRating}'),
                   trailing: Text(
                     whitesTimer,
                     style: const TextStyle(fontSize: 16),
@@ -341,6 +378,102 @@ class _GameScreenState extends State<GameScreen> {
         ),
       ),
     );
+  }
+
+  Widget buildChessBoard({
+    required GameProvider gameProvider,
+    required UserModel userModel,
+  }) {
+    bool isOurTurn = gameProvider.isWhitesTurn ==
+        (gameProvider.gameCreatorUid == userModel.uid);
+
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: BoardController(
+        state: gameProvider.flipBoard
+            ? gameProvider.state.board.flipped()
+            : gameProvider.state.board,
+        playState: isOurTurn ? PlayState.ourTurn : PlayState.theirTurn,
+        pieceSet: PieceSet.merida(),
+        theme: BoardTheme.brown,
+        moves: gameProvider.state.moves,
+        onMove: _onMove,
+        onPremove: _onMove,
+        markerTheme: MarkerTheme(
+          empty: MarkerTheme.dot,
+          piece: MarkerTheme.corners(),
+        ),
+        promotionBehaviour: PromotionBehaviour.autoPremove,
+      ),
+    );
+  }
+
+  getState({required GameProvider gameProvider}) {
+    if (gameProvider.flipBoard) {
+      return gameProvider.state.board.flipped();
+    } else {
+      gameProvider.state.board;
+    }
+  }
+
+  Widget showOpponentsData({
+    required GameProvider gameProvider,
+    required UserModel userModel,
+    required String timeToShow,
+  }) {
+    if (gameProvider.vsComputer) {
+      return ListTile(
+        leading: CircleAvatar(
+          radius: 25,
+          backgroundImage: AssetImage(AssetsManager.stockfishIcon),
+        ),
+        title: const Text('Stockfish'),
+        subtitle: Text('Rating: ${gameProvider.gameLevel * 1000}'),
+        trailing: Text(
+          timeToShow,
+          style: const TextStyle(fontSize: 16),
+        ),
+      );
+    } else {
+      // check if we are creator of this game
+      if (gameProvider.gameCreatorUid == userModel.uid) {
+        return ListTile(
+          leading: gameProvider.userPhoto == ''
+              ? CircleAvatar(
+                  radius: 25,
+                  backgroundImage: AssetImage(AssetsManager.userIcon),
+                )
+              : CircleAvatar(
+                  radius: 25,
+                  backgroundImage: NetworkImage(gameProvider.userPhoto),
+                ),
+          title: Text(gameProvider.userName),
+          subtitle: Text('Rating: ${gameProvider.userRating}'),
+          trailing: Text(
+            timeToShow,
+            style: const TextStyle(fontSize: 16),
+          ),
+        );
+      } else {
+        return ListTile(
+          leading: gameProvider.gameCreatorPhoto == ''
+              ? CircleAvatar(
+                  radius: 25,
+                  backgroundImage: AssetImage(AssetsManager.userIcon),
+                )
+              : CircleAvatar(
+                  radius: 25,
+                  backgroundImage: NetworkImage(gameProvider.gameCreatorPhoto),
+                ),
+          title: Text(gameProvider.gameCreatorName),
+          subtitle: Text('Rating: ${gameProvider.gameCreatorRating}'),
+          trailing: Text(
+            timeToShow,
+            style: const TextStyle(fontSize: 16),
+          ),
+        );
+      }
+    }
   }
 
   Future<bool?> _showExitConfirmDialog(BuildContext context) {

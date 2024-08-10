@@ -121,6 +121,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           email: email,
           image: '',
           createdAt: '',
+          playerRating: 1200,
         );
 
         authProvider.saveUserDataToFireStore(

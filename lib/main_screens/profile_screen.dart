@@ -42,7 +42,7 @@ class ProfileScreen extends StatelessWidget {
                     radius: 50,
                     backgroundImage: data['image'] != null
                         ? NetworkImage(data['image'])
-                        : const AssetImage('assets/images/user_icon.png'),
+                        : const AssetImage('assets/images/user_icon.png') as ImageProvider,
                   ),
                 ),
                 const SizedBox(height: 20),
