@@ -29,7 +29,7 @@ Future<User?> signInWithGoogle() async {
         'uid': user.uid,
         'name': user.displayName,
         'email': user.email,
-        'image': user.photoURL,
+        'images': user.photoURL,
       }, SetOptions(merge: true));
   return userCredential.user;
 }
