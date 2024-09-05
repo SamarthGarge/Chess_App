@@ -27,7 +27,7 @@ class _GameStartUpScreenState extends State<GameStartUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 28, 166, 32),
+        backgroundColor: Colors.blue,
         title: const Text(
           'Setup Game',
           style: TextStyle(color: Colors.white),

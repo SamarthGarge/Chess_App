@@ -64,13 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
           
-          // ListTile(
-          //   leading: Icon(Icons.help),
-          //   title: Text('Help Center'),
-          //   onTap: () {
-          //     // Navigator.push(context, MaterialPageRoute(builder: (context) => HelpCenterScreen()));
-          //   },
-          // ),
+          
      ],
     ),
     );

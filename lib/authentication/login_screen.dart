@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         // forgot password method here
-                      //  forgotPassword(context, emailController.text.trim()),
+                      
                          Navigator.push(context,MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),);
                       },
                       child: const Text('Forgot Password ?'),
@@ -197,13 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // SocialButton(
-                      //   label: 'Guest',
-                      //   assetImage: AssetsManager.userIcon,
-                      //   height: 55.0,
-                      //   width: 55.0,
-                      //   onTap: () {},
-                      // ),
+                      
                       SocialButton(
                           label: 'Google',
                           assetImage: AssetsManager.googleIcon,
@@ -215,13 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   context, Constants.homeScreen);
                             });
                           }),
-                      // SocialButton(
-                      //   label: 'Facebook',
-                      //   assetImage: AssetsManager.facebookIcon,
-                      //   height: 55.0,
-                      //   width: 55.0,
-                      //   onTap: () {},
-                      // ),
+                      
                     ],
                   ),
                   const SizedBox(

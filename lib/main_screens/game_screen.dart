@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_chess/constants.dart';
 import 'package:flutter_chess/helper/helper_methods.dart';
 import 'package:flutter_chess/helper/uci_commands.dart';
@@ -195,23 +194,7 @@ class _GameScreenState extends State<GameScreen> {
         }
       });
 
-      // await Future.delayed(
-      //     Duration(milliseconds: Random().nextInt(4750) + 250));
-      // gameProvider.game.makeRandomMove();
-      // gameProvider.setAiThinking(false);
-      // gameProvider.setSquaresState().whenComplete(() {
-      //   if (gameProvider.player == Squares.white) {
-      //     // pause timer for black
-      //     gameProvider.pauseBlacksTimer();
 
-      //     startTimer(isWhiteTimer: true, onNewGame: () {});
-      //   } else {
-      //     // pause timer for white
-      //     gameProvider.pauseWhitesTimer();
-
-      //     startTimer(isWhiteTimer: false, onNewGame: () {});
-      //   }
-      // });
     }
     }
     
@@ -281,19 +264,9 @@ class _GameScreenState extends State<GameScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          // leading: IconButton(
-          //   icon: const Icon(
-          //     Icons.arrow_back,
-          //     color: Colors.white,
-          //   ),
-          //   onPressed: () {
-          //     // TODO show dialog if sure
-          //     Navigator.pop(context);
-          //   },
-          // ),
           backgroundColor: Colors.blue,
           title: const Text(
-            'Flutter Chess',
+            'Chess Royale',
             style: TextStyle(color: Colors.white),
           ),
           actions: [
