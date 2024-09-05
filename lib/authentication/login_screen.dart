@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthenticationProvider>();
     return Scaffold(
-      backgroundColor:Colors.blue, 
+      backgroundColor:Colors.white, 
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(
