@@ -20,7 +20,7 @@ class _GameTimeScreenState extends State<GameTimeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 28, 166, 32),
+        backgroundColor: Colors.blue,
         title: const Text(
           'Choose game time',
           style: TextStyle(color: Colors.white),
