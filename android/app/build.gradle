@@ -54,6 +54,15 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+    // Generation of architecture specific apks
+    splits {
+            abi {
+                enable true
+                reset()
+                include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+                universalApk false  // If true, a single APK is created that contains all ABIs
+            }
+        }
 }
 
 flutter {
